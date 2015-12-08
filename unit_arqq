@@ -26,11 +26,11 @@ type
     procedure Button4Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure Calcula_m();
-    procedure testa_MetaP();
+    procedure Calcula_m(); // procedimento que percorre o arquivo txt, soma os valores e atualiza as metas dos clientes 
+    procedure testa_MetaP(); // procedimentos que percorrem o arquivo txt verificam se as metas foram cumpridas ou qual o valor faltante 
     procedure testa_MetaM();
     procedure testa_MetaR();
-    procedure testaInclusão1();
+    procedure testaInclusão1(); // procedimentos que verficam se ainclusão de vendas foi realizada adequadamente
     procedure testaInclusão2();
     procedure testaInclusão3();
   private
@@ -41,8 +41,8 @@ type
 
 var
   Form1: TForm1;
-  arquivo: TextFile;
-  val_P, val_R, val_M: double;
+  arquivo: TextFile; // variável do tipo arquivo tecxto
+  val_P, val_R, val_M: double; // variáveis globais
   meta_P,meta_R,meta_M: double;
 implementation
 
