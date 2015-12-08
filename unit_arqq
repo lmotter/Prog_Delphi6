@@ -1,0 +1,288 @@
+unit arqq;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, Menus, jpeg;
+
+type
+  TForm1 = class(TForm)
+    Button1: TButton;
+    Button2: TButton;
+    Memo1: TMemo;
+    RadioButton1: TRadioButton;
+    RadioButton2: TRadioButton;
+    RadioButton3: TRadioButton;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Label1: TLabel;
+    Button4: TButton;
+    Button5: TButton;
+    Image1: TImage;
+    procedure Fecha(Sender: TObject; var Action: TCloseAction);
+    procedure RadClick(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Calcula_m();
+    procedure testa_MetaP();
+    procedure testa_MetaM();
+    procedure testa_MetaR();
+    procedure testaInclusão1();
+    procedure testaInclusão2();
+    procedure testaInclusão3();
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  arquivo: TextFile;
+  val_P, val_R, val_M: double;
+  meta_P,meta_R,meta_M: double;
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.Button4Click(Sender: TObject);
+
+begin
+  AssignFile(arquivo, Edit3.Text);
+  {$I-}
+  Reset(arquivo);
+  {$I+}
+  if (IOResult <> 0) then
+  Rewrite(arquivo) { arquivo não existe e será criado }
+  else begin
+  CloseFile(arquivo);
+  Append(arquivo)
+  end;
+  Button1.Enabled := True;
+  Button2.Enabled := True;
+  Button5.Enabled := True;
+  Edit2.Enabled := True;
+  RadioButton1.Enabled := True;
+  RadioButton2.Enabled := True;
+  RadioButton3.Enabled := True;
+end;
+
+procedure TForm1.Button5Click(Sender: TObject);
+
+var texto: String;
+begin
+Reset(arquivo); //abre o arquivo para leitura;
+Memo1.Lines.Clear;
+
+While not eof(arquivo) do
+
+begin
+Readln(arquivo,texto);
+Memo1.Lines.Add(texto);
+end;
+
+Closefile(arquivo);
+Append(arquivo);
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+   Memo1.Lines.Clear;
+ if RadioButton1.Checked = True then
+     testaInclusão1
+ else
+ if RadioButton2.Checked = True then
+   testaInclusão2
+ else
+ if RadioButton3.Checked = True then
+    testaInclusão3
+ else  
+ if RadioButton1.Checked = False or RadioButton2.Checked = False or RadioButton3.Checked = False then
+    ShowMessage('Selecione um cliente!');
+
+
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+
+begin
+ Memo1.Lines.Clear;
+
+ if RadioButton1.Checked = True then
+   begin
+    Memo1.Lines.Clear;
+    Calcula_m;
+    testa_MetaP
+   end
+ else
+ if RadioButton2.Checked = True then
+    begin
+     Memo1.Lines.Clear;
+     Calcula_m;
+     testa_MetaR
+    end
+ else
+ if RadioButton3.Checked = True then
+   begin
+    Memo1.Lines.Clear;
+    Calcula_m;
+    testa_MetaM
+   end
+ else
+ if RadioButton1.Checked = False or RadioButton2.Checked = False or RadioButton3.Checked = False then
+    ShowMessage('Selecione um cliente!');
+
+
+end;
+
+procedure TForm1.Calcula_m();
+var
+linha,nome,valor:String;
+i: integer;
+begin
+
+Reset(arquivo); //abre o arquivo para leitura;
+
+ val_P:=0;
+ val_R:=0;
+ val_M:=0;
+
+While not eof(arquivo) do
+
+begin
+       Readln(arquivo,linha);
+       i := pos('|',linha);
+       nome := copy(linha,1,i-1);
+       delete(linha,1,i);
+
+       i := pos('|',linha);
+       valor := copy(linha,1,i-1);
+       delete(linha,1,i);
+
+       if nome = 'Pedrinho' then
+        val_P := val_P + StrToFloat(valor)
+       else
+        if nome = 'Retifica LC' then
+         val_R := val_R + StrToFloat(valor)
+        else
+         val_M := val_M + StrToFloat(valor);
+
+end;
+
+ meta_P := 20000 - val_P;
+ meta_R := 15000 - val_R;
+ meta_M := 25000 - val_M;
+
+
+ Closefile(arquivo);
+ Append(arquivo);
+end;
+
+procedure TForm1.RadClick(Sender: TObject);
+begin
+Memo1.Lines.Clear;
+end;
+
+procedure TForm1.testa_MetaP();
+begin
+if meta_P <= 0 then
+     begin
+        Memo1.Lines.Add('Meta já atingida!');
+        RadioButton1.Checked := False
+     end
+     else
+     begin
+      Memo1.Lines.Add('Valor faltante para a meta:');
+      Memo1.Lines.Add(FloatToStr(meta_P));
+      RadioButton1.Checked := False
+     end;
+end;
+
+procedure TForm1.testa_MetaR();
+begin
+if meta_R <= 0 then
+     begin
+        Memo1.Lines.Add('Meta já atingida!');
+        RadioButton2.Checked := False
+     end
+     else
+     begin
+      Memo1.Lines.Add('Valor faltante para a meta:');
+      Memo1.Lines.Add(FloatToStr(meta_R));
+      RadioButton2.Checked := False
+     end;
+end;
+
+procedure TForm1.testa_MetaM();
+begin
+if meta_M <= 0 then
+     begin
+        Memo1.Lines.Add('Meta já atingida!');
+        RadioButton3.Checked := False
+     end
+     else
+     begin
+      Memo1.Lines.Add('Valor faltante para a meta:');
+      Memo1.Lines.Add(FloatToStr(meta_M));
+      RadioButton3.Checked := False
+     end;
+end;
+
+procedure TForm1.Fecha(Sender: TObject; var Action: TCloseAction);
+var
+r: integer;
+begin
+r := MessageDlg('Deseja sair realmente?',mtConfirmation,[mbYes,mbNo],0);
+if r = 6 then
+Exit
+else
+Abort;
+
+end;
+
+procedure TForm1.testaInclusão1();
+begin
+if not (Edit2.Text = '') then
+      begin
+      WriteLn(arquivo,RadioButton1.Caption,'|', Edit2.Text,'|');
+      Edit2.Clear;
+      RadioButton1.Checked := False;
+      ShowMessage('Inclusão realizada com sucesso.')
+    end
+  else
+   ShowMessage('Inclua um valor!!');
+
+end;
+
+procedure TForm1.testaInclusão2();
+begin
+if not (Edit2.Text = '') then
+      begin
+      WriteLn(arquivo,RadioButton2.Caption,'|', Edit2.Text,'|');
+      Edit2.Clear;
+      RadioButton2.Checked := False;
+      ShowMessage('Inclusão realizada com sucesso.')
+    end
+  else
+   ShowMessage('Inclua um valor!!');
+
+end;
+
+procedure TForm1.testaInclusão3();
+begin
+if not (Edit2.Text = '') then
+      begin
+      WriteLn(arquivo,RadioButton3.Caption,'|', Edit2.Text,'|');
+      Edit2.Clear;
+      RadioButton3.Checked := False;
+      ShowMessage('Inclusão realizada com sucesso.')
+    end
+  else
+   ShowMessage('Inclua um valor!!');
+
+end;
+
+end.
